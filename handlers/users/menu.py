@@ -3,7 +3,7 @@ import os
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, MediaGroup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, MediaGroup, InputFile
 
 from keyboards.default.menu_keyboard import MENU
 # Ташкент, улица Дурмон йули, 46
@@ -184,27 +184,32 @@ async def send_link(message: types.Message):
     await message.answer_location(latitude=latitude, longitude=longitude)
 
 
+
 @dp.message_handler(text='📊 Results')
 async def send_link(message: types.Message):
     image_paths = [
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-04-27_09-37-02.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-04-27_09-37-11.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-06-05_13-14-36.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-06-25_18-38-55.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-06-27_11-57-14.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-07-05_10-00-18.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-12-24_15-47-53.jpg",
-        "/home/xusandev/Desktop/Hogwarts/media/photo_2024-12-24_16-05-42.jpg",
+        "media/photo_2024-04-27_09-37-02.jpg",
+        "media/photo_2024-04-27_09-37-11.jpg",
+        "media/photo_2024-06-05_13-14-36.jpg",
+        "media/photo_2024-06-25_18-38-55.jpg",
+        "media/photo_2024-06-27_11-57-14.jpg",
+        "media/photo_2024-07-05_10-00-18.jpg",
+        "media/photo_2024-12-24_15-47-53.jpg",
+        "media/photo_2024-12-24_16-05-42.jpg",
     ]
 
     await message.answer("Bu yerda bizning o'quvchilarimizning natijalari bilan tanishasiz 👇🏻")
 
     media = MediaGroup()
-    for image_path in image_paths:
-        media.attach_photo(types.InputFile(image_path))
 
-    await message.answer_media_group(media)
-
+    for i, image_path in enumerate(image_paths):
+        try:
+            media.attach_photo(InputFile(image_path))
+        except FileNotFoundError:
+            await message.answer(f"Rasm topilmadi: {image_path}")
+        if (i + 1) % 10 == 0 or i == len(image_paths) - 1:
+            await message.answer_media_group(media)
+            media = MediaGroup()
 
 @dp.message_handler(text='📞 Contact')
 async def send_link(message: types.Message):
